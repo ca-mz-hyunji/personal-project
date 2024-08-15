@@ -18,65 +18,53 @@ def get_db_connection(sql):
         cursor.execute(sql)
         return cursor.fetchall()
 '''
-account = {
-    1: {
+test_users = {
+    "Alice": {
         "username" : "Alice",
-		"password" : "HELLOALICE",
-		"city" : "New York"
+		"password" : "HELLOALICE"
     },
-    2: {
+    "Bob": {
         "username" : "Bob",
-		"password" : "HELLOBOB",
-		"city" : "San Francisco"
+		"password" : "HELLOBOB"
     }
 }
 
 @app.route('/')
 def home():
-    return render_template('home.html')
+    message = request.args.get('message')
+    return render_template('home.html', message=message)
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    message = request.args.get('message')
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        if username == 'Alice' and password == 'HELLOALICE':
-            flash('You are now logged in.', 'success')
-            return redirect(url_for('home'))
-        elif username == 'Bob' and password == 'HELLOBOB':
-            flash('You are now logged in', 'success')
-            return redirect(url_for('home'))
+        password_confirm = request.form.get('password_confirm')
+        if not username or not password or not password_confirm:
+            return redirect(url_for('register', message='All fields are required.'))
+        if password != password_confirm:
+            return redirect(url_for('register', message='Passwords do not match.'))
+        if username in test_users:
+            return redirect(url_for('login', message='Username already exists. Please login instead.'))
+        return redirect(url_for('home', message='You are now registered.'))
+    return render_template('register.html', message=message)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    message = request.args.get('message')
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        user = test_users.get(username)
+        if username in test_users and password == test_users[username]['password']:
+            return redirect(url_for('home', message='You are now logged in.'))
         else:
-            flash('Invalid username or password. Please try again.', 'error')
-    return render_template('login.html')
+            return redirect(url_for('login', message='Invalid username or password. Please try again.'))
+    return render_template('login.html', message=message)
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    return render_template('register.html')
-
-"""
-@app.route('/logout')
-def logout():
-    session.pop('loggedin', None)
-    session.pop('id', None)
-    session.pop('username', None)
-    return redirect(url_for('login'))
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    msg = ''
-    if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'city' in request.form:
-        if request.form:
-            username = request.form['username']
-            password = request.form['password']
-            city = request.form['city']
-            msg = 'You have successfully registered'
-    return redirect(url_for('login'))
-
-@app.route('/')
-def index():
-    return render_template('login.html')
-"""
 
 if __name__=='__main__':
     app.run()

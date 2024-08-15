@@ -4,29 +4,31 @@
     .centre {
     text-align: center;
     margin-top: 100px;
-}
+    }
+    .message {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    color: #940000;
+    }
 </style>
     <body>
     <div class="centre">
         <h2>Login</h2>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-            <ul class=flashes>
-                {% for category, message in messages %}
-                    <li class="{{ category }}">{{ message }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-        {% endwith %}
         <p>Enter the username and the password to login.</p>
-        <form>
+        {% if message %}
+            <div class="message">
+                {{ message }}
+            </div>
+        {% endif %}
+        <form method="post" action="{{ url_for('login') }}">
             <label for="username">Username:</label><br>
             <input type="text" id="username" name="username"><br>
             <label for="password">Password:</label><br>
-            <input type="text" id="password" name="password"><br><br>
-            <input type="submit" value="Submit">
+            <input type="password" id="password" name="password"><br><br>
+            <button type="submit">Submit</button><br><br>
         </form>
-        <form action="{{ url_for('home') }}" method="get">
+        <form method="get" action="{{ url_for('home') }}">
             <button type="submit">Home</button>
         </form>
     </div>
