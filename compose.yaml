@@ -1,0 +1,10 @@
+services:
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: authdata
+    ports:
+      - 3307:3306
+    volumes:
+      - authdata-volume: /var/lib/mysql
