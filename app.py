@@ -12,7 +12,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'Welcome2024!@#',
+    'password': 'password',
     'database': 'web_app',
     'port': 3306
 }
