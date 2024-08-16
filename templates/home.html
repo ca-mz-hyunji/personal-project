@@ -23,15 +23,18 @@
         <h2>WELCOME</h2>
         <p>Press the button (login or register).</p>
         {% if message %}
-            <div class="message {{ 'success' if 'now' in message else 'error'}}">
+            <div class="message {{ 'success' if 'successfully' in message else 'error'}}">
                 {{ message }}
             </div>
         {% endif %}
-        <form action="{{ url_for('login') }}" method="get">
+        <form action="/login" method="get">
             <button type="submit">Login</button><br><br>
         </form>
-        <form action="{{ url_for('register') }}" method="get">
-            <button type="submit">Register</button>
+        <form action="/register" method="get">
+            <button type="submit">Register</button><br><br>
+        </form>
+        <form method="get" action="/upload">
+            <button type="submit">Upload</button>
         </form>
     </div>
     </body>

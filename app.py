@@ -1,16 +1,45 @@
 from flask import Flask, redirect, render_template, request, url_for
 import pymysql
 from pymysql.cursors import DictCursor
+import os
+
+UPLOAD_FOLDER = 'C:\\Users\\Kim\\Desktop\\GitHub\\personal-project\\uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'd',
+    'password': 'Welcome2024!@#',
     'database': 'web_app',
     'port': 3306
 }
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    message = request.args.get('message')
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            return redirect(request.url)
+        
+        file = request.files['file']
+        
+        if file.filename == '':
+            return redirect(request.url)
+        
+        if file and allowed_file(file.filename):
+            filename = file.filename
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('home', message='File successfully uploaded.'))
+        else:
+            return redirect(url_for('home', message='File type not allowed.'))
+    return render_template('upload.html', message=message)
+
 
 def get_db_connection():
     return pymysql.connect(**DB_CONFIG, cursorclass=DictCursor)
@@ -68,7 +97,8 @@ def register():
         if user_exist == True:
             return redirect(url_for('login', message='Username already exists. Please login instead.'))
         
-        return redirect(url_for('home', message='You are now registered.'))
+        add_new_user(username, password)
+        return redirect(url_for('home', message='You are now successfully registered.'))
     
     return render_template('register.html', message=message)
 
@@ -81,7 +111,7 @@ def login():
         # get the data from the DB
         user_data = get_user_data(username, password)
         if user_data and username == user_data['username'] and password == user_data['password']:
-            return redirect(url_for('home', message='You are now logged in.'))
+            return redirect(url_for('home', message='You are now successfully logged in.'))
         else:
             return redirect(url_for('login', message='Invalid username or password. Please try again.'))
         
@@ -89,6 +119,4 @@ def login():
 
 
 if __name__=='__main__':
-    #app.run()
-    add_new_user('Carl', 'HELLOCARL')
-    print(check_username('Carl'))
+    app.run()
