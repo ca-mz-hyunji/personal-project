@@ -2,19 +2,22 @@ from flask import Flask, redirect, render_template, request, url_for
 import pymysql
 from pymysql.cursors import DictCursor
 import os
+from dotenv import load_dotenv
 
-UPLOAD_FOLDER = 'C:\\Users\\Kim\\Desktop\\GitHub\\personal-project\\uploads'
+UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+load_dotenv('config/.env.db')
+
 DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': 'password',
-    'database': 'web_app',
-    'port': 3306
+    'host': os.environ.get('DB_HOST'),
+    'user': os.environ.get('DB_USER'),
+    'password': os.environ.get('DB_PASSWORD'),
+    'database': os.environ.get('DB_NAME'),
+    'port': int(os.environ.get("PORT"))
 }
 
 def allowed_file(filename):
